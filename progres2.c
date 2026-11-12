@@ -3,7 +3,6 @@
 
 int main(int argc, char *argv[]) {
     int opcion;
-    int t = 1;
 
     do {
         printf("\n-----------MENU-------------\n");
@@ -36,17 +35,8 @@ int main(int argc, char *argv[]) {
             case 6:
                 printf("\nSaliendo......\n");
                 return 0;
-                break;
             default:
-                do {
-                    if (opcion > 6 || opcion < 1) {
-                        t = 0;
-                        printf("\nERROR. Ingrese una opcion valida\n>> ");
-                        validarNumero(&opcion);
-                    } else {
-                        t = 1;
-                    }
-                } while (t == 0);
+                printf("\nERROR. Ingrese una opcion valida\n");
                 break;
         }
 
