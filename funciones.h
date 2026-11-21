@@ -1,0 +1,11 @@
+void validarNumero(int *numero, int min);
+void validarFloat(float *numero);
+void leercadena(char *cadena, int n);
+int compararNombres(char *cadena1, char *cadena2);
+int buscarProducto(char nombreBuscado[200]);
+float sugerirPrecio(int pos);
+void ingresarProductos();
+void mostrarProductos();
+void editarProductos();
+void eliminarProductos();
+void calcularProduccion();
