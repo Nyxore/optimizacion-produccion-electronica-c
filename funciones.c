@@ -12,11 +12,14 @@ char nombresRecursos[20][200];
 float costoRecurso[20];
 int recursos[5][20];
 int registrados = 0;
+float porcentajeGanancia = -1;
 
 void leercadena(char *cadena, int n) {
     fgets(cadena, n, stdin);
-    int len = strlen(cadena) - 1;
-    cadena[len] = '\0';
+    int len = strlen(cadena);
+    if (len > 0 && cadena[len - 1] == '\n') {
+        cadena[len - 1] = '\0';
+    }
 }
 
 int buscarProducto(char nombreBuscado[200]) {
@@ -82,13 +85,22 @@ void validarFloat(float *numero) {
 }
 
 float sugerirPrecio(int pos) {
+
     float costoMateriales = 0;
+    float tl;
+
+    if (porcentajeGanancia < 0) {
+        printf("Ingrese el porcentaje de ganancia que desea obtener: ");
+        validarFloat(&porcentajeGanancia);
+    }
+
+    tl = (porcentajeGanancia / 100.0f) + 1.0f;
 
     for (int j = 0; j < numRecursos; j++) {
         costoMateriales += (recursos[pos][j] * costoRecurso[j]);
     }
 
-    return (costoMateriales + (tiempo[pos] * costoHora)) * 1.30;
+    return (costoMateriales + (tiempo[pos] * costoHora)) * tl;
 }
 
 void ingresarProductos() {
@@ -98,15 +110,24 @@ void ingresarProductos() {
     }
 
     if (numRecursos == 0) {
-        printf("Ingrese el costo operativo por unidad de tiempo: ");
+        printf("Ingrese cuánto cuesta mantener el equipo funcionando durante una hora: ");
         validarFloat(&costoHora);
         printf("Ingrese cuantos tipos de materiales tiene: ");
         validarNumero(&numRecursos, 1);
         printf("\n");
 
         for (int j = 0; j < numRecursos; j++) {
-            printf("Ingrese el nombre del material %d: ", j + 1);
-            leercadena(nombresRecursos[j], 200);
+            
+            do{
+                printf("Ingrese el nombre del material %d: ", j + 1);
+                leercadena(nombresRecursos[j], 200);
+                
+                if (nombresRecursos[j][0] == '\0') {
+                    printf("ERROR. Nombre no identificado.\n");
+                }
+
+            }while (nombresRecursos[j][0] == '\0');
+
             printf("Ingrese el costo unitario de %s: ", nombresRecursos[j]);
             validarFloat(&costoRecurso[j]);
             printf("\n");
@@ -117,9 +138,16 @@ void ingresarProductos() {
     int cantidadProducto, recursosProducto[20];
     float tiempoProducto, precioSugerido, precioFinal;
 
-    printf("Ingrese el nombre del producto: ");
-    leercadena(nombreBuscado, 200);
-    printf("\n");
+    do {
+
+        printf("Ingrese el nombre del producto: ");
+        leercadena(nombreBuscado, 200);
+
+        if (nombreBuscado[0] == '\0') {
+            printf("ERROR. Nombre no identificado.\n");
+        }
+
+    } while (nombreBuscado[0] == '\0');
 
     if (buscarProducto(nombreBuscado) != -1) {
         printf("El producto ya esta registrado.\n");
@@ -148,7 +176,7 @@ void ingresarProductos() {
     printf("\n");
 
     precioSugerido = sugerirPrecio(registrados);
-    printf("Precio sugerido (+30%% ganancia): %.2f\n", precioSugerido);
+    printf("Precio sugerido: %.2f\n", precioSugerido);
     printf("Ingrese el precio de venta unitario: ");
     validarFloat(&precioFinal);
     precioVenta[registrados] = precioFinal;
@@ -163,7 +191,6 @@ void mostrarProductos() {
         return;
     }
 
-    printf("\nProductos registrados:\n");
     printf("#\t\tNombre\t\tCantidad\tTiempo\t\tPrecio");
     for (int j = 0; j < numRecursos; j++) {
         printf("\t\t%s", nombresRecursos[j]);
@@ -235,17 +262,17 @@ void editarProductos() {
         case 3:
             printf("Ingrese el nuevo tiempo en horas del producto: \n");
             validarFloat(&tiempo[posicion]);
-            printf("Producto editado exitosamente (Sugerido +30%%: %.2f)\n", sugerirPrecio(posicion));
+            printf("Producto editado exitosamente (Sugerido: %.2f)\n", sugerirPrecio(posicion));
             break;
         case 4:
             for (int j = 0; j < numRecursos; j++) {
                 printf("Ingrese la nueva cantidad de %s: \n", nombresRecursos[j]);
                 validarNumero(&recursos[posicion][j], 0);
             }
-            printf("Producto editado exitosamente (Sugerido +30%%: %.2f)\n", sugerirPrecio(posicion));
+            printf("Producto editado exitosamente : %.2f)\n", sugerirPrecio(posicion));
             break;
         case 5:
-            printf("Precio sugerido (+30%% ganancia): %.2f\n", sugerirPrecio(posicion));
+            printf("Precio sugerido: %.2f\n", sugerirPrecio(posicion));
             printf("Ingrese el nuevo precio de venta: \n");
             validarFloat(&precioVenta[posicion]);
             printf("Producto editado exitosamente\n");
