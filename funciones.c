@@ -191,21 +191,21 @@ void mostrarProductos() {
         return;
     }
 
-    printf("#\t\tNombre\t\tCantidad\tTiempo\t\tPrecio");
+    printf("#\t\tNombre\t\tCantidad\tTiempo\t\tPrecio\n");
     for (int j = 0; j < numRecursos; j++) {
         printf("\t\t%s", nombresRecursos[j]);
     }
     printf("\n");
 
     for (int i = 0; i < registrados; i++) {
-        printf("%d\t\t%s\t\t%d\t\t%.2f\t\t%.2f",
+        printf("%d\t\t%s\t\t%d\t\t%.2f\t\t%.2f\n",
                i + 1,
                nombreProducto[i],
                cantidad[i],
                tiempo[i],
                precioVenta[i]);
         for (int j = 0; j < numRecursos; j++) {
-            printf("\t\t%d", recursos[i][j]);
+            printf("\t\t%d\n", recursos[i][j]);
         }
         printf("\n");
     }
