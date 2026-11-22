@@ -15,6 +15,7 @@ int main(int argc, char *argv[]) {
         printf(">> ");
 
         validarNumero(&opcion, 1);
+        printf("\n");
 
         switch (opcion) {
             case 1:

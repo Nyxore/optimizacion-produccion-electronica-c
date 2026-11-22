@@ -20,6 +20,29 @@ void leercadena(char *cadena, int n) {
 }
 
 int buscarProducto(char nombreBuscado[200]) {
+
+    int pos = 0;
+    int esn = 1;
+
+    if (nombreBuscado[0] == '\0') {
+        return -1;
+    }
+
+    for (int i = 0; nombreBuscado[i] != '\0'; i++) {
+        if (nombreBuscado[i] < '0' || nombreBuscado[i] > '9') {
+            esn = 0;
+            break;
+        }
+        pos = pos * 10 + (nombreBuscado[i] - '0');
+    }
+
+    if (esn == 1) {
+        if (pos >= 1 && pos <= registrados) {
+            return pos - 1;
+        }
+        return -1;
+    }
+
     for (int i = 0; i < registrados; i++) {
         if (compararNombres(nombreProducto[i], nombreBuscado) == 0) {
             return i;
@@ -77,14 +100,16 @@ void ingresarProductos() {
     if (numRecursos == 0) {
         printf("Ingrese el costo operativo por unidad de tiempo: ");
         validarFloat(&costoHora);
-        printf("Ingrese cuantos tipos de recursos tiene: ");
+        printf("Ingrese cuantos tipos de materiales tiene: ");
         validarNumero(&numRecursos, 1);
+        printf("\n");
 
         for (int j = 0; j < numRecursos; j++) {
-            printf("Ingrese el nombre del recurso %d: ", j + 1);
+            printf("Ingrese el nombre del material %d: ", j + 1);
             leercadena(nombresRecursos[j], 200);
             printf("Ingrese el costo unitario de %s: ", nombresRecursos[j]);
             validarFloat(&costoRecurso[j]);
+            printf("\n");
         }
     }
 
@@ -94,16 +119,19 @@ void ingresarProductos() {
 
     printf("Ingrese el nombre del producto: ");
     leercadena(nombreBuscado, 200);
+    printf("\n");
 
     if (buscarProducto(nombreBuscado) != -1) {
         printf("El producto ya esta registrado.\n");
+        printf("\n");
         return;
     }
 
     printf("Ingrese la cantidad del producto: ");
     validarNumero(&cantidadProducto, 1);
-    printf("Ingrese el tiempo del producto: ");
+    printf("Ingrese el tiempo del producto en horas: ");
     validarFloat(&tiempoProducto);
+    printf("\n");
 
     for (int j = 0; j < numRecursos; j++) {
         printf("Ingrese la cantidad de %s del producto: ", nombresRecursos[j]);
@@ -116,6 +144,8 @@ void ingresarProductos() {
     for (int j = 0; j < numRecursos; j++) {
         recursos[registrados][j] = recursosProducto[j];
     }
+
+    printf("\n");
 
     precioSugerido = sugerirPrecio(registrados);
     printf("Precio sugerido (+30%% ganancia): %.2f\n", precioSugerido);
@@ -133,7 +163,7 @@ void mostrarProductos() {
         return;
     }
 
-    printf("Productos registrados:\n");
+    printf("\nProductos registrados:\n");
     printf("#\t\tNombre\t\tCantidad\tTiempo\t\tPrecio");
     for (int j = 0; j < numRecursos; j++) {
         printf("\t\t%s", nombresRecursos[j]);
@@ -141,7 +171,12 @@ void mostrarProductos() {
     printf("\n");
 
     for (int i = 0; i < registrados; i++) {
-        printf("%d\t\t%s\t\t%d\t\t%.2f\t\t%.2f", i + 1, nombreProducto[i], cantidad[i], tiempo[i], precioVenta[i]);
+        printf("%d\t\t%s\t\t%d\t\t%.2f\t\t%.2f",
+               i + 1,
+               nombreProducto[i],
+               cantidad[i],
+               tiempo[i],
+               precioVenta[i]);
         for (int j = 0; j < numRecursos; j++) {
             printf("\t\t%d", recursos[i][j]);
         }
@@ -158,8 +193,9 @@ void editarProductos() {
     char nombreBuscado[200];
     int posicion, opc;
 
-    printf("Ingrese el nombre del producto que desea editar\n");
+    printf("Ingrese el nombre del producto que desea editar:");
     leercadena(nombreBuscado, 200);
+    printf("\n");
 
     posicion = buscarProducto(nombreBuscado);
 
@@ -172,7 +208,7 @@ void editarProductos() {
     printf("1. Nombre\n");
     printf("2. Cantidad\n");
     printf("3. Tiempo\n");
-    printf("4. Recursos\n");
+    printf("4. Materiales\n");
     printf("5. Precio de venta\n");
     printf(">> ");
     validarNumero(&opc, 1);
@@ -197,7 +233,7 @@ void editarProductos() {
             printf("Producto editado exitosamente\n");
             break;
         case 3:
-            printf("Ingrese el nuevo tiempo del producto: \n");
+            printf("Ingrese el nuevo tiempo en horas del producto: \n");
             validarFloat(&tiempo[posicion]);
             printf("Producto editado exitosamente (Sugerido +30%%: %.2f)\n", sugerirPrecio(posicion));
             break;
@@ -289,18 +325,18 @@ void calcularProduccion() {
     }
 
     printf("\n--- RESULTADOS DE PRODUCCION ---\n");
-    printf("Tiempo total requerido: %.2f\n", tiempoTotalRequerido);
-    printf("Recursos totales requeridos:\n");
+    printf("Tiempo total requerido en horas: %.2f\n", tiempoTotalRequerido);
+    printf("Materiales totales requeridos:\n");
     for (int j = 0; j < numRecursos; j++) {
         printf("- %s: %d\n", nombresRecursos[j], recursosTotalesRequeridos[j]);
     }
 
     printf("\n--- DISPONIBILIDAD DE LA FABRICA ---\n");
-    printf("Ingrese el tiempo de produccion disponible: ");
+    printf("Ingrese el tiempo en horas de produccion disponible: ");
     validarFloat(&tiempoDisponible);
 
     for (int j = 0; j < numRecursos; j++) {
-        printf("Ingrese los recursos disponibles de %s: ", nombresRecursos[j]);
+        printf("Ingrese los materiales disponibles de %s: ", nombresRecursos[j]);
         validarNumero(&recursosDisponibles[j], 0);
     }
     for (int j = 0; j < numRecursos; j++) {
