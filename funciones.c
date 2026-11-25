@@ -23,13 +23,10 @@ void leercadena(char *cadena, int n) {
 }
 
 int buscarProducto(char nombreBuscado[200]) {
-
     int pos = 0;
     int esn = 1;
 
-    if (nombreBuscado[0] == '\0') {
-        return -1;
-    }
+    if (nombreBuscado[0] == '\0') return -1;
 
     for (int i = 0; nombreBuscado[i] != '\0'; i++) {
         if (nombreBuscado[i] < '0' || nombreBuscado[i] > '9') {
@@ -55,16 +52,13 @@ int buscarProducto(char nombreBuscado[200]) {
 }
 
 void validarNumero(int *numero, int min) {
-    int l;
-
-    l = scanf("%d", numero);
-
+    int l = scanf("%d", numero);
     while (l != 1 || *numero < min) {
         while (getchar() != '\n');
         if (min == 1) {
-            printf("ERROR. Ingrese solo numeros enteros mayores a cero: ");
+            printf("  >> ERROR: Ingrese un numero entero mayor a cero: ");
         } else {
-            printf("ERROR. Ingrese cero o un numero entero positivo: ");
+            printf("  >> ERROR: Ingrese cero o un numero entero positivo: ");
         }
         l = scanf("%d", numero);
     }
@@ -72,25 +66,22 @@ void validarNumero(int *numero, int min) {
 }
 
 void validarFloat(float *numero) {
-    int l;
-
-    l = scanf("%f", numero);
-
+    int l = scanf("%f", numero);
     while (l != 1 || *numero <= 0) {
         while (getchar() != '\n');
-        printf("ERROR. Ingrese solo numeros positivos: ");
+        printf("  >> ERROR: Ingrese solo valores numericos positivos: ");
         l = scanf("%f", numero);
     }
     while (getchar() != '\n');
 }
 
 float sugerirPrecio(int pos) {
-
     float costoMateriales = 0;
     float tl;
 
     if (porcentajeGanancia < 0) {
-        printf("Ingrese el porcentaje de ganancia que desea obtener: ");
+        printf("\nConfiguracion de Ganancia Global:\n");
+        printf("Ingrese el porcentaje de ganancia deseado (ej. 30 para 30%%): ");
         validarFloat(&porcentajeGanancia);
     }
 
@@ -105,30 +96,25 @@ float sugerirPrecio(int pos) {
 
 void ingresarProductos() {
     if (registrados >= 5) {
-        printf("No se pueden registrar mas productos.\n");
+        printf("\n[!] ALERTA: Catalogo lleno. Limite de 5 productos alcanzado.\n");
         return;
     }
 
     if (numRecursos == 0) {
-        printf("Ingrese cuánto cuesta mantener el equipo funcionando durante una hora: ");
+        printf("\n=== CONFIGURACION INICIAL DE LA FABRICA ===\n");
+        printf("Ingrese el costo operativo de la fabrica por 1 hora ($): ");
         validarFloat(&costoHora);
-        printf("Ingrese cuantos tipos de materiales tiene: ");
+        printf("Ingrese la cantidad de tipos de materiales a utilizar en total: ");
         validarNumero(&numRecursos, 1);
-        printf("\n");
+        printf("-------------------------------------------\n");
 
         for (int j = 0; j < numRecursos; j++) {
-            
-            do{
-                printf("Ingrese el nombre del material %d: ", j + 1);
+            do {
+                printf("Nombre del material %d (Ej. Lana, Tela, Arcilla): ", j + 1);
                 leercadena(nombresRecursos[j], 200);
-                
-                if (nombresRecursos[j][0] == '\0') {
-                    printf("ERROR. Nombre no identificado.\n");
-                }
+            } while (nombresRecursos[j][0] == '\0');
 
-            }while (nombresRecursos[j][0] == '\0');
-
-            printf("Ingrese el costo unitario de %s: ", nombresRecursos[j]);
+            printf("Costo unitario de '%s' ($): ", nombresRecursos[j]);
             validarFloat(&costoRecurso[j]);
             printf("\n");
         }
@@ -138,31 +124,26 @@ void ingresarProductos() {
     int cantidadProducto, recursosProducto[20];
     float tiempoProducto, precioSugerido, precioFinal;
 
+    printf("\n=== REGISTRO DE NUEVO PRODUCTO ===\n");
     do {
-
-        printf("Ingrese el nombre del producto: ");
+        printf("Nombre del producto (Ej. Peluche, Flor, Vasija): ");
         leercadena(nombreBuscado, 200);
-
-        if (nombreBuscado[0] == '\0') {
-            printf("ERROR. Nombre no identificado.\n");
-        }
-
     } while (nombreBuscado[0] == '\0');
 
     if (buscarProducto(nombreBuscado) != -1) {
-        printf("El producto ya esta registrado.\n");
-        printf("\n");
+        printf("\n[!] El producto '%s' ya se encuentra registrado.\n", nombreBuscado);
         return;
     }
 
-    printf("Ingrese la cantidad del producto: ");
+    printf("Cantidad planificada a producir (unidades): ");
     validarNumero(&cantidadProducto, 1);
-    printf("Ingrese el tiempo del producto en horas: ");
+    printf("Tiempo de produccion por unidad (en horas): ");
     validarFloat(&tiempoProducto);
-    printf("\n");
+    printf("-------------------------------------------\n");
+    printf("Receta de Materiales para 1 unidad de '%s':\n", nombreBuscado);
 
     for (int j = 0; j < numRecursos; j++) {
-        printf("Ingrese la cantidad de %s del producto: ", nombresRecursos[j]);
+        printf("  - Cantidad de '%s' requerida: ", nombresRecursos[j]);
         validarNumero(&recursosProducto[j], 0);
     }
 
@@ -173,119 +154,111 @@ void ingresarProductos() {
         recursos[registrados][j] = recursosProducto[j];
     }
 
-    printf("\n");
-
     precioSugerido = sugerirPrecio(registrados);
-    printf("Precio sugerido: %.2f\n", precioSugerido);
-    printf("Ingrese el precio de venta unitario: ");
+    printf("\n>> PRECIO DE VENTA SUGERIDO (Incluye materiales, operacion y ganancia): $%.2f\n", precioSugerido);
+    printf("Ingrese el Precio de Venta Unitario Final ($): ");
     validarFloat(&precioFinal);
     precioVenta[registrados] = precioFinal;
 
     registrados++;
-    printf("Producto registrado exitosamente.\n");
+    printf("\n[OK] Producto '%s' registrado exitosamente.\n", nombreBuscado);
 }
 
 void mostrarProductos() {
     if (registrados == 0) {
-        printf("No hay productos registrados.\n");
+        printf("\n[!] No hay productos registrados en el sistema.\n");
         return;
     }
 
-    printf("#\t\tNombre\t\tCantidad\tTiempo\t\tPrecio\n");
+    printf("\n=================================================================================================\n");
+   
+    printf("%-5s %-20s %-10s %-15s %-12s", "ID", "NOMBRE PRODUCTO", "CANTIDAD", "TIEMPO (Hrs)", "PRECIO ($)");
     for (int j = 0; j < numRecursos; j++) {
-        printf("\t\t%s", nombresRecursos[j]);
+        printf(" %-12s", nombresRecursos[j]);
     }
-    printf("\n");
+    printf("\n-------------------------------------------------------------------------------------------------\n");
 
     for (int i = 0; i < registrados; i++) {
-        printf("%d\t\t%s\t\t%d\t\t%.2f\t\t%.2f\n",
-               i + 1,
-               nombreProducto[i],
-               cantidad[i],
-               tiempo[i],
-               precioVenta[i]);
+        printf("%-5d %-20s %-10d %-15.2f %-12.2f",
+               i + 1, nombreProducto[i], cantidad[i], tiempo[i], precioVenta[i]);
         for (int j = 0; j < numRecursos; j++) {
-            printf("\t\t%d\n", recursos[i][j]);
+            printf(" %-12d", recursos[i][j]);
         }
         printf("\n");
     }
+    printf("=================================================================================================\n");
 }
 
 void editarProductos() {
     if (registrados == 0) {
-        printf("No hay productos registrados\n");
+        printf("\n[!] No hay productos registrados para editar.\n");
         return;
     }
 
     char nombreBuscado[200];
     int posicion, opc;
 
-    printf("Ingrese el nombre del producto que desea editar:");
+    printf("\n=== EDICION DE PRODUCTO ===\n");
+    printf("Ingrese el nombre exacto del producto a modificar: ");
     leercadena(nombreBuscado, 200);
-    printf("\n");
 
     posicion = buscarProducto(nombreBuscado);
 
     if (posicion == -1) {
-        printf("El producto no se encuentra registrado\n");
+        printf("\n[!] Producto no encontrado en la base de datos.\n");
         return;
     }
 
-    printf("¿Que dato desea editar?\n");
-    printf("1. Nombre\n");
-    printf("2. Cantidad\n");
-    printf("3. Tiempo\n");
-    printf("4. Materiales\n");
-    printf("5. Precio de venta\n");
-    printf(">> ");
+    printf("\nSeleccione el campo a editar del producto '%s':\n", nombreProducto[posicion]);
+    printf("1. Nombre\n2. Cantidad planificada\n3. Tiempo de fabricacion (Horas)\n4. Receta de Materiales\n5. Precio de Venta al publico\n");
+    printf(">> Opcion: ");
     validarNumero(&opc, 1);
 
     switch (opc) {
         case 1: {
             char nuevoNombre[200];
-            printf("Ingrese el nuevo nombre del producto: \n");
+            printf("\nNuevo nombre del producto: ");
             leercadena(nuevoNombre, 200);
-
             if (buscarProducto(nuevoNombre) != -1) {
-                printf("El producto ya esta registrado\n");
+                printf("\n[!] Error: Ya existe un producto con ese nombre.\n");
             } else {
                 strcpy(nombreProducto[posicion], nuevoNombre);
-                printf("Producto editado exitosamente\n");
+                printf("\n[OK] Nombre actualizado correctamente.\n");
             }
             break;
         }
         case 2:
-            printf("Ingrese la nueva cantidad del producto: \n");
+            printf("\nNueva cantidad a producir (unidades): ");
             validarNumero(&cantidad[posicion], 1);
-            printf("Producto editado exitosamente\n");
+            printf("\n[OK] Cantidad actualizada.\n");
             break;
         case 3:
-            printf("Ingrese el nuevo tiempo en horas del producto: \n");
+            printf("\nNuevo tiempo de fabricacion (en horas): ");
             validarFloat(&tiempo[posicion]);
-            printf("Producto editado exitosamente (Sugerido: %.2f)\n", sugerirPrecio(posicion));
+            printf("\n[OK] Tiempo actualizado. (Nuevo precio sugerido: $%.2f)\n", sugerirPrecio(posicion));
             break;
         case 4:
+            printf("\n");
             for (int j = 0; j < numRecursos; j++) {
-                printf("Ingrese la nueva cantidad de %s: \n", nombresRecursos[j]);
+                printf("Nueva cantidad de '%s' requerida: ", nombresRecursos[j]);
                 validarNumero(&recursos[posicion][j], 0);
             }
-            printf("Producto editado exitosamente : %.2f)\n", sugerirPrecio(posicion));
+            printf("\n[OK] Materiales actualizados. (Nuevo precio sugerido: $%.2f)\n", sugerirPrecio(posicion));
             break;
         case 5:
-            printf("Precio sugerido: %.2f\n", sugerirPrecio(posicion));
-            printf("Ingrese el nuevo precio de venta: \n");
+            printf("\nPrecio sugerido por el sistema: $%.2f\n", sugerirPrecio(posicion));
+            printf("Nuevo precio de venta final ($): ");
             validarFloat(&precioVenta[posicion]);
-            printf("Producto editado exitosamente\n");
+            printf("\n[OK] Precio actualizado exitosamente.\n");
             break;
         default:
-            printf("Opcion no valida\n");
+            printf("\n[!] Opcion no valida.\n");
             break;
     }
 }
 
 int compararNombres(char *cadena1, char *cadena2) {
     int i = 0;
-
     while (cadena1[i] == cadena2[i] && cadena1[i] != '\0' && cadena2[i] != '\0') {
         i++;
     }
@@ -294,20 +267,21 @@ int compararNombres(char *cadena1, char *cadena2) {
 
 void eliminarProductos() {
     if (registrados == 0) {
-        printf("No hay productos registrados para eliminar\n");
+        printf("\n[!] No hay productos registrados para eliminar.\n");
         return;
     }
 
     char nombreBuscado[200];
     int posicion;
 
-    printf("Ingrese el nombre del producto que desea eliminar:\n");
+    printf("\n=== ELIMINACION DE PRODUCTO ===\n");
+    printf("Ingrese el nombre del producto que desea eliminar: ");
     leercadena(nombreBuscado, 200);
 
     posicion = buscarProducto(nombreBuscado);
 
     if (posicion == -1) {
-        printf("El producto no se encuentra registrado\n");
+        printf("\n[!] El producto no se encuentra registrado.\n");
         return;
     }
 
@@ -322,12 +296,12 @@ void eliminarProductos() {
     }
 
     registrados--;
-    printf("Producto eliminado\n");
+    printf("\n[OK] Producto eliminado del catalogo exitosamente.\n");
 }
 
 void calcularProduccion() {
     if (registrados == 0) {
-        printf("No hay productos registrados para calcular la produccion\n");
+        printf("\n[!] Registre productos primero para realizar los calculos.\n");
         return;
     }
 
@@ -351,40 +325,43 @@ void calcularProduccion() {
         costoTotalMateriales += (recursosTotalesRequeridos[j] * costoRecurso[j]);
     }
 
-    printf("\n--- RESULTADOS DE PRODUCCION ---\n");
-    printf("Tiempo total requerido en horas: %.2f\n", tiempoTotalRequerido);
-    printf("Materiales totales requeridos:\n");
+    printf("\n=======================================================\n");
+    printf("        REPORTE GERENCIAL: PRODUCCION Y FINANZAS\n");
+    printf("=======================================================\n");
+    printf("[1] REQUERIMIENTOS TOTALES DE PRODUCCION\n");
+    printf("  >> Tiempo Total Operativo : %.2f horas\n", tiempoTotalRequerido);
+    printf("  >> Materiales Totales Requeridos:\n");
     for (int j = 0; j < numRecursos; j++) {
-        printf("- %s: %d\n", nombresRecursos[j], recursosTotalesRequeridos[j]);
+        printf("     - %-15s : %d unidades\n", nombresRecursos[j], recursosTotalesRequeridos[j]);
     }
 
-    printf("\n--- DISPONIBILIDAD DE LA FABRICA ---\n");
-    printf("Ingrese el tiempo en horas de produccion disponible: ");
+    printf("\n-------------------------------------------------------\n");
+    printf("[2] DISPONIBILIDAD DE PLANTA (VALIDACION)\n");
+    printf("  Ingrese las HORAS de produccion disponibles: ");
     validarFloat(&tiempoDisponible);
 
     for (int j = 0; j < numRecursos; j++) {
-        printf("Ingrese los materiales disponibles de %s: ", nombresRecursos[j]);
+        printf("  Ingrese la cantidad en bodega disponible de '%s': ", nombresRecursos[j]);
         validarNumero(&recursosDisponibles[j], 0);
-    }
-    for (int j = 0; j < numRecursos; j++) {
         if (recursosTotalesRequeridos[j] > recursosDisponibles[j]) {
             cumpleRecursos = 0;
         }
     }
-    printf("\n--- ANALISIS DE FACTIBILIDAD ---\n");
+    
+    printf("\n-------------------------------------------------------\n");
+    printf("[3] ANALISIS DE FACTIBILIDAD LOGISTICA\n");
 
     if (tiempoTotalRequerido <= tiempoDisponible && cumpleRecursos == 1) {
-        printf("La fabrica si puede cumplir con la demanda.\n");
+        printf("  >>> ESTADO: [VIABLE] La fabrica SI puede cumplir con la demanda.\n");
     } else {
-        printf("La fabrica no puede cumplir con la demanda.\n");
+        printf("  >>> ESTADO: [NO VIABLE] La fabrica NO puede cumplir con la demanda.\n");
         if (tiempoTotalRequerido > tiempoDisponible) {
-            printf("Faltan %.2f unidades de tiempo\n", tiempoTotalRequerido - tiempoDisponible);
+            printf("      - DEFICIT TIEMPO: Faltan %.2f horas de produccion.\n", tiempoTotalRequerido - tiempoDisponible);
         }
         for (int j = 0; j < numRecursos; j++) {
             if (recursosTotalesRequeridos[j] > recursosDisponibles[j]) {
-                printf("Faltan %d unidades del recurso %s\n",
-                       recursosTotalesRequeridos[j] - recursosDisponibles[j],
-                       nombresRecursos[j]);
+                printf("      - DEFICIT MATERIAL: Faltan %d unidades del recurso '%s'.\n",
+                       recursosTotalesRequeridos[j] - recursosDisponibles[j], nombresRecursos[j]);
             }
         }
     }
@@ -393,14 +370,18 @@ void calcularProduccion() {
     costoTotalProduccion = costoTotalMateriales + costoTotalOperativo;
     gananciaNeta = ingresosTotales - costoTotalProduccion;
 
-    printf("\n--- ANALISIS FINANCIERO ---\n");
-    printf("Costo total de materiales: %.2f\n", costoTotalMateriales);
-    printf("Costo operativo total: %.2f\n", costoTotalOperativo);
-    printf("Costo total de produccion: %.2f\n", costoTotalProduccion);
-    printf("Ingresos estimados por ventas: %.2f\n", ingresosTotales);
+    printf("\n-------------------------------------------------------\n");
+    printf("[4] ANALISIS FINANCIERO Y RENTABILIDAD\n");
+    printf("  %-32s $%-10.2f\n", "Costo Total de Materiales:", costoTotalMateriales);
+    printf("  %-32s $%-10.2f\n", "Costo Operativo Total (Horas):", costoTotalOperativo);
+    printf("  %-32s $%-10.2f\n", "COSTO TOTAL DE PRODUCCION:", costoTotalProduccion);
+    printf("  %-32s $%-10.2f\n", "INGRESOS ESTIMADOS POR VENTAS:", ingresosTotales);
+    
+    printf("\n");
     if (gananciaNeta >= 0) {
-        printf("Ganancia neta proyectada: %.2f\n", gananciaNeta);
+        printf("  >>> GANANCIA NETA PROYECTADA:    $%.2f <<<\n", gananciaNeta);
     } else {
-        printf("Perdida neta proyectada: -%.2f\n", -gananciaNeta);
+        printf("  >>> PERDIDA NETA PROYECTADA:    -$%.2f <<<\n", -gananciaNeta);
     }
+    printf("=======================================================\n");
 }

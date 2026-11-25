@@ -5,17 +5,19 @@ int main(int argc, char *argv[]) {
     int opcion;
 
     do {
-        printf("\n-------------MENU-------------\n");
-        printf("1. Ingresar productos.\n");
-        printf("2. Mostrar productos.\n");
-        printf("3. Editar productos.\n");
-        printf("4. Eliminar producto.\n");
-        printf("5. Calcular produccion, finanzas y stock.\n");
-        printf("6. salir.\n");
-        printf(">> ");
+        printf("\n=============================================\n");
+        printf("   SISTEMA DE PRODUCCION Y OPTIMIZACION\n");
+        printf("=============================================\n");
+        printf(" 1. Ingresar nuevos productos (Ficha Tecnica)\n");
+        printf(" 2. Mostrar listado de productos\n");
+        printf(" 3. Editar datos de un producto\n");
+        printf(" 4. Eliminar producto del catalogo\n");
+        printf(" 5. Evaluar produccion, viabilidad y finanzas\n");
+        printf(" 6. Salir del sistema\n");
+        printf("=============================================\n");
+        printf(">> Seleccione una opcion: ");
 
         validarNumero(&opcion, 1);
-        printf("\n");
 
         switch (opcion) {
             case 1:
@@ -34,10 +36,10 @@ int main(int argc, char *argv[]) {
                 calcularProduccion();
                 break;
             case 6:
-                printf("\nSaliendo......\n");
+                printf("\nSaliendo del sistema. Hasta pronto!\n\n");
                 return 0;
             default:
-                printf("\nERROR. Ingrese una opcion valida\n");
+                printf("\n[!] ERROR. Ingrese una opcion valida (1 - 6)\n");
                 break;
         }
 
